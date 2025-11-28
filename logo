@@ -1,0 +1,93 @@
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "LogoAnimationGui"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local container = Instance.new("Frame")
+container.Size = UDim2.new(0, 400, 0, 160) -- increased height for small text
+container.BackgroundTransparency = 1
+container.AnchorPoint = Vector2.new(0, 1) -- bottom-left anchor
+container.Position = UDim2.new(0, -400, 1, 0) -- start offscreen bottom-left
+container.Parent = gui
+
+local image = Instance.new("ImageLabel")
+image.Name = "Logo"
+image.Image = "rbxassetid://120025793545036"
+image.Size = UDim2.new(0, 130, 0, 130)
+image.BackgroundTransparency = 1
+image.Position = UDim2.new(0, 0, 0, 0)
+image.Parent = container
+
+local mainText                  = Instance.new("TextLabel")
+mainText.Text                   = ""
+mainText.Size                   = UDim2.new(0, 270, 0, 120)
+mainText.Position               = UDim2.new(0, 140, 0, 10) -- right side of logo, slight top offset
+mainText.TextColor3             = Color3.new(1, 1, 1)
+mainText.BackgroundTransparency = 1
+mainText.Font                   = Enum.Font.GothamBold
+mainText.TextSize               = 26
+mainText.TextXAlignment         = Enum.TextXAlignment.Left
+mainText.TextYAlignment         = Enum.TextYAlignment.Top
+mainText.Visible                = false
+mainText.Parent                 = container
+
+local stroke1 = Instance.new("UIStroke")
+stroke1.Thickness = 1
+stroke1.Color = Color3.new(0, 0, 0)
+stroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+stroke1.Parent = mainText
+
+local smallText                  = Instance.new("TextLabel")
+smallText.Text                   = ""
+smallText.Size                   = UDim2.new(0, 270, 0, 20)
+smallText.Position               = UDim2.new(0, 140, 0, 130) -- just below mainText
+smallText.TextColor3             = Color3.new(1, 1, 1)
+smallText.BackgroundTransparency = 1
+smallText.Font                   = Enum.Font.GothamBold
+smallText.TextSize               = 18
+smallText.TextXAlignment         = Enum.TextXAlignment.Left
+smallText.TextYAlignment         = Enum.TextYAlignment.Top
+smallText.Visible                = false
+smallText.Parent                 = container
+
+local stroke2 = Instance.new("UIStroke")
+stroke2.Thickness = 1
+stroke2.Color = Color3.new(0, 0, 0)
+stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+stroke2.Parent = smallText
+
+local tweenToCenter = TweenService:Create(container, TweenInfo.new(1.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Position = UDim2.new(0.5, -200, 0.5, 70)
+})
+
+local finalPosition = UDim2.new(0, 30, 1, -30)
+local tweenToBottomLeft = TweenService:Create(container, TweenInfo.new(1.0, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+    Position = finalPosition
+})
+
+tweenToCenter:Play()
+tweenToCenter.Completed:Wait()
+
+task.wait(0.3)
+
+tweenToBottomLeft:Play()
+tweenToBottomLeft.Completed:Wait()
+
+mainText.Visible = true
+smallText.Visible = true
+
+local swayAmplitudeDegrees = 7
+local swaySpeed = 2
+local startTime = tick()
+
+RunService.RenderStepped:Connect(function()
+    local elapsed = tick() - startTime
+    local angle = math.sin(elapsed * swaySpeed) * swayAmplitudeDegrees
+    container.Rotation = angle
+end)
